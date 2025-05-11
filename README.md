@@ -2,6 +2,10 @@
 
 A server-based tool that leverages Manim to generate mathematical animations from text prompts.
 
+## Working Video:
+
+[Working Video](https://github.com/user-attachments/assets/7130709f-b0bd-48d8-b27d-e01536807036)
+
 ## Description
 
 MCP Manim Server provides an interface to:
