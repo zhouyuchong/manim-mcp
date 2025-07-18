@@ -2,7 +2,10 @@ import subprocess
 import tempfile
 import os
 import shutil
+import logging
 from mcp.server.fastmcp import FastMCP
+
+logger = logging.getLogger(__name__)
 
 mcp = FastMCP()
 
@@ -17,35 +20,29 @@ os.makedirs(BASE_DIR, exist_ok=True)
 def manin_executable_code(manim_code: str ) -> str:
     """
         This function take the manim_code and then run it in the file named manim_code.py
-        The output will be saved in the media directory and the path to the file will be returned.
+        The output will be saved in the media directory and the path to the output media will be returned.
     """
 
     tempDir = os.path.join(BASE_DIR, "temp")
     os.makedirs(tempDir, exist_ok=True)
     file_path = os.path.join(tempDir, "manim_code.py")
-
+    media_file_name = "output.mp4"
+    media_path = os.path.join(tempDir, "media/videos/manim_code/1080p60", media_file_name)
     try:
         with open(file_path, "w") as f:
             f.write(manim_code)
 
         # Run the manim command
         result = subprocess.run(
-            [MANIM_EXECUTABLE_PATH, "-p", file_path],
+            [MANIM_EXECUTABLE_PATH, "-o", media_file_name, file_path],
             capture_output=True,
             text=True,
             cwd=tempDir,
         )
-
         if result.returncode == 0:
-            # Find the output file in the media directory
-            media_dir = os.path.join(BASE_DIR, "media")
-            output_files = os.listdir(media_dir)
-            if output_files:
-                # Assuming the first file is the one we want
-                output_file = os.path.join(media_dir, output_files[0])
-                return output_file
-            else:
-                return "No output files found."
+            # return media_path
+            return f"Manim media has been generated, saved to path: {media_path}"
+
         else:
             return f"Error: {result.stderr}"
     except Exception as e:
@@ -60,9 +57,9 @@ def clean_manim_media(directory: str) -> str:
     try:
         if os.path.exists(directory):
             shutil.rmtree(directory)
-            return "Media directory cleaned."
+            return "Media directory cleaned successfully."
         else:
-            return "Media directory does not exist."
+            return "Media directory does not exist. Maybe it was already cleaned."
     except Exception as e:
         return f"An error occurred: {str(e)}"
     
